@@ -194,11 +194,5 @@ scatter(y_hat, y, 'blue');
 a= lsline;
 set(a(1),'color','r');
 
-%% Estimate AR(4) model from the AR4.csv file
+%% Estimate AR(4) model from the csv file
 
-csv = readtable('AR4.csv');
-Y_AR4 = table2array(csv);
-%%
-OLS = ARpOLS(Y_AR4,1,2);
-
-% After data manipulation we also can use the function fitlm(Y,y)
