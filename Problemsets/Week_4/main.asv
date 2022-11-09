@@ -1,6 +1,0 @@
-len = length(y)-1;
-a=1;
-%%
-y=Y(1+p:end, 1);
-y = [a, y];
-%y_lagged = Y(1:end-p, 1);
