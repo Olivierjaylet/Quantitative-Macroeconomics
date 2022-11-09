@@ -1,3 +1,6 @@
+%%%%%%%%% Week 3 %%%%%%%%%
+
+
 %%%%%% Law of Large Numbers %%%%%%
 T = 10000;
 u = zeros(T, 1);
@@ -46,8 +49,8 @@ sig_eps = 0.4;
 Y = func_AR1(phi, T, B, sig_eps);
 
 mu_hat = mean(Y);
-var_Y = sig_eps^2/(1-phi^2); % analytical variance of AR(1)
-%var_Y = sig_eps^2/(1-phi)^2; % Correct standardized variance
+%var_Y = sig_eps^2/(1-phi^2); % analytical variance of AR(1)
+var_Y = sig_eps^2/(1-phi)^2; % Correct standardized variance
 
 
 % Standardization
@@ -55,3 +58,5 @@ Z = sqrt(T).*(mu_hat - mu)./sqrt(var_Y);
 
 figure;
 histogram(Z);
+
+% finir le code
