@@ -198,6 +198,7 @@ set(a(1),'color','r');
 
 csv = readtable('AR4.csv');
 Y_AR4 = table2array(csv);
+
 %%
 OLS = ARpOLS(Y_AR4,1,2);
 
