@@ -6,7 +6,6 @@
 % const = 1 if constant, or 2 if constant + linear trend
 % alpha : significance of the p-values
 
-%function [thetas, std_errs, t_stats, p_values] = ARpOLS(Y,p,const,alpha)
 function OLS = ARpOLS(Y,p,const)
 len = length(Y)-p;
 time_vect = nan(len,1);
