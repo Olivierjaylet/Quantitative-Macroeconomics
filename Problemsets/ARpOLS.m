@@ -6,8 +6,8 @@
 % const = 1 if constant, or 2 if constant + linear trend
 % alpha : significance of the p-values
 
-function OLS = ARpOLS(Y,p,const)
-len = length(Y)-p;
+function OLS = ARpOLS(Y,p,const, alph)
+len = size(Y,1)-p;
 time_vect = nan(len,1);
 const_vect = zeros(len, 1)+1;
 y = Y(1+p:end, 1);
@@ -17,25 +17,36 @@ end
 
 if const ==1 
     y_lagged = [const_vect Y(1:end-p, 1)];
-elseif const ==2
+elseif const == 2
     y_lagged = [const_vect time_vect Y(1:end-p, 1)];
 end
 
-thetas = ((y_lagged'*y_lagged)^(-1))*(y_lagged'*y);
+YtYinv = inv(y_lagged'*y_lagged);
+thetahat = YtYinv*(y_lagged'*y);
 
-y_hat = sum((Y(1:end-p, 1)*thetas'), 2);
-u_hat =  y-y_hat;
+yhat = sum((Y(1:end-p, 1)*thetahat'), 2);
+uhat =  y-yhat;
+utu = uhat'*uhat;
 
-sigma_square_u=((1/(len-1-p))*sum(u_hat));
-var_thetas=sigma_square_u*((y_lagged'*y_lagged)^(-1));
-SE_thetas = diag(sqrt(var_thetas));
+var_uhat=utu/(len-p-const);
+siguhat = sqrt(var_uhat);
 
-t_stats = thetas/SE_thetas;
+var_thetahat=var_uhat*(diag(YtYinv));
+sd_thetahat = sqrt(var_thetahat);
 
-OLS.thetahat = thetas;
-OLS.SEhat = SE_thetas;
+t_stats = thetahat./sd_thetahat;
+t_crit = -tinv(alph/2,len-p-const);
+pvalues = tpdf(t_stats,len-p-const);
+
+theta_ci = [thetahat-t_crit.*sd_thetahat, thetahat+t_crit.*sd_thetahat];
+
+OLS.T_eff = len;
+OLS.thetahat = thetahat;
+OLS.siguhat = siguhat;
+OLS.sd_thetahat = sd_thetahat;
 OLS.tstats = t_stats;
-
-
+OLS.pvalues = pvalues;
+OLS.theta_ci = theta_ci;
+OLS.resid = uhat;
 
 end
