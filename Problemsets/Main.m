@@ -178,7 +178,7 @@ Z = sqrt(T).*(mu_hat - mu)./sqrt(var_Y);
 figure;
 histogram(Z);
 
-% finir le code
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% finir le code
 
 
 %%
@@ -200,6 +200,24 @@ csv = readtable('AR4.csv');
 Y_AR4 = table2array(csv);
 
 %%
-OLS = ARpOLS(Y_AR4,1,2);
+OLS = ARpOLS(Y_AR4,1,1,0.05);
 
 % After data manipulation we also can use the function fitlm(Y,y)
+
+
+
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% Week 4 %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+AIC = LagOrderSelectionARp(Y_AR4,1,20,"AIC");
+BIC = LagOrderSelectionARp(Y_AR4,1,20,"SIC");
+HQC = LagOrderSelectionARp(Y_AR4,1,20,"HQC");
+
+%%
+
+nlag = find(min(AIC));
+
+
