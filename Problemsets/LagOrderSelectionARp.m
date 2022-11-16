@@ -1,4 +1,4 @@
-function val_crit = LagOrderSelectionARp(y,const,pmax,crit)
+function [nlag] = LagOrderSelectionARp(y,const,pmax,crit)
 
 val_crit = nan(pmax,1);
 
@@ -6,17 +6,18 @@ val_crit = nan(pmax,1);
 for lag = 1 : pmax
     Teff = size(y,1) - pmax;
     n = lag + const;
-    siguhat = ARpOLS(y,lag,const,0.05).siguhat;
+    sigutilde = ARpML(y,lag,const,0.05).sigutilde;
     if crit == "AIC"
-        val_crit(lag) = log(siguhat^2) + (2/Teff) * n;
+        val_crit(lag) = log(sigutilde^2) + (2/Teff) * n;
     elseif crit == "SIC"
-        val_crit(lag) = log(siguhat^2) + (log(Teff)/Teff) * n;
+        val_crit(lag) = log(sigutilde^2) + (log(Teff)/Teff) * n;
     elseif crit == "HQC"
-        val_crit(lag) = log(siguhat^2) + (2*log(log(Teff))/Teff) * n;
+        val_crit(lag) = log(sigutilde^2) + (2*log(log(Teff))/Teff) * n;
     end
 end
+clc;
 
 
-nlag = find(min(val_crit));
+nlag = find(val_crit == min(val_crit));
 
 end

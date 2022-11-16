@@ -211,13 +211,22 @@ OLS = ARpOLS(Y_AR4,1,1,0.05);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Week 4 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-AIC = LagOrderSelectionARp(Y_AR4,1,20,"AIC");
-BIC = LagOrderSelectionARp(Y_AR4,1,20,"SIC");
-HQC = LagOrderSelectionARp(Y_AR4,1,20,"HQC");
+Y_AR1 = func_AR_2(0.95, 1000, 1, 1);
 
 %%
 
-nlag = find(min(AIC));
+Y_AR2 = arima('Constant',0.5, 'AR',{0.7 0.25},'Variance',.1);
+rng(5)
+Y_AR2 = simulate(Y_AR2,10000);
+
+figure
+plot(Y_AR2)
+xlim([0,50])
+title('Simulated AR(2) Process')
+%%
+
+AIC= LagOrderSelectionARp(Y_AR1,1,10,"AIC");
+SIC = LagOrderSelectionARp(Y_AR1,1,10,"SIC");
+HQC = LagOrderSelectionARp(Y_AR1,1,10,"HQC");
 
 

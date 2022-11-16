@@ -15,7 +15,7 @@ sd = sqrt(diag(V));
 sd_thetatilde = sd(1:p+const);
 sd_sigutilde = sd(end);
 
-T_eff = T-P;
+T_eff = T-p;
 logl = -fval;
 tstat = thetatilde./sd_thetatilde;
 tcrit = -tinv(alph/2,T_eff-p);

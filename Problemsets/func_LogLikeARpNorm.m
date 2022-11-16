@@ -2,7 +2,7 @@
 
 function loglik = func_LogLikeARpNorm(x, y, p, const)
 
-T=size(y);
+T=size(y,1);
 Y = lagmatrix(y,1:p);
 
 theta = x(1:(const+p)); % AR coefficients (All values before sig_u)
@@ -17,13 +17,11 @@ Y = Y((p+1):end,:);     % Get rid of initial observations
 y = y(p+1:end);         % Get rid of initial observations
 
 % Compute residuals
-uhat = y - Y*theta;
-% Compute Sum of squared residual
-SSR = transpose(uhat)*uhat;
-
+uhat = y - Y*theta; % ML residuals
+utu = uhat' * uhat; % ML sum of residuals
 
 % Compute the conditional log likelihood
-loglik = -log(2*pi)*(T-p)/2 - log(sig_u^2)*(T-p)/2 - SSR/(2*sig_u^2);
+loglik = -log(2*pi)*(T-p)/2 - log(sig_u^2)*(T-p)/2 - utu/(2*sig_u^2);
 
 if isnan(loglik) || isinf(loglik) || ~isreal(loglik)
     loglik = -1e10;     % if anything goes wrong set value very small, can also use -Inf

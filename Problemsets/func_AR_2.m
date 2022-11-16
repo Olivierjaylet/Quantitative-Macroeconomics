@@ -1,4 +1,4 @@
-function [Y] = func_AR1(phi, T, B, sigma)
+function [Y] = func_AR_2(phi, T, B, sigma)
 nb_process = B;
 
 Y=nan(T,nb_process);
