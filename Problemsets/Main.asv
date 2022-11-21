@@ -239,7 +239,7 @@ OLS_phat = ARpOLS(inflation,phat_AIC,1, 0.05);
 
 %% Estimate ML with and AR(1)
 
-ML_AR1 = ARpML(inflation,1,1, 0.05);
+ML
 
 
 
