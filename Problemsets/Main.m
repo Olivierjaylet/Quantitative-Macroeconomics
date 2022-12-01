@@ -164,8 +164,14 @@ T = 10000;
 phi = 0.8;
 c = 3;
 mu = c/(1-phi);
-sig_eps = 0.4;
-Y = func_AR1_2(phi, T, B, sig_eps);
+sig_eps = 0.5;
+Y(1,:) = repmat(mu,1,B);
+for b = 1:B
+    epsi = sig_eps * randn(T,1);
+    for t=2:T
+     Y(t,b)=c + phi*Y(t-1,b) + epsi(t);
+    end
+end
 
 mu_hat = mean(Y);
 %var_Y = sig_eps^2/(1-phi^2); % analytical variance of AR(1)
@@ -175,10 +181,14 @@ var_Y = sig_eps^2/(1-phi)^2; % Correct standardized variance
 % Standardization
 Z = sqrt(T).*(mu_hat - mu)./sqrt(var_Y);
 
-figure;
-histogram(Z);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% finir le code
+x = -5:0.1:5;
+figure('name', 'Centrale Limit Theorems');
+histogram(Z, 'Normalization','pdf');
+hold on;
+plot(x, normpdf(x), 'LineWidth',2);
+title('Dependant Data (correct)');
+ylim([0 0.45]);
+hold off;
 
 
 %%
@@ -206,22 +216,29 @@ OLS = ARpOLS(Y_AR4,1,1,0.05);
 
 
 
-
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% Week 4 %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-Y_AR1 = func_AR_2(0.95, 1000, 1, 1);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Information Criteria for AR(p)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-AIC= LagOrderSelectionARp(Y_AR1,1,10,"AIC");
-SIC = LagOrderSelectionARp(Y_AR1,1,10,"SIC");
-HQC = LagOrderSelectionARp(Y_AR1,1,10,"HQC");
+Y_AR1 = func_AR1_2(0.95, 1000, 1, 1);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Portmanteau test for residual autocorrelation
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%% Information Criteria for AR(p) %%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+AIC= LagOrderSelectionARp(Y_AR4,1,10,"AIC");
+%%
+SIC = LagOrderSelectionARp(Y_AR4,1,10,"SIC");
+%%
+HQC = LagOrderSelectionARp(Y_AR4,1,10,"HQC");
+
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Portmanteau test for residual autocorrelation %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Import data
 csv = readtable('gnpdeflator.csv');
@@ -230,8 +247,13 @@ inflation = zeros(size(gnpdeflator,1)-1, 1);
 for i =2 : size(gnpdeflator,1)
     inflation(i) = log(gnpdeflator(i,3)) - log(gnpdeflator(i-1,3));
 end
+
+pmax = 12;      % set max number of lags
+const = 0;      % no constant
+alph = 0.05;    % significance level
+
 %% Compute AIC without time trend
-phat_AIC = LagOrderSelectionARp(inflation,1,10,"AIC"); % with constant
+phat_AIC = LagOrderSelectionARp(inflation,const,pmax,"AIC"); % with constant
 
 %% Estimate OLS with and AR(phat)
 
@@ -241,7 +263,10 @@ OLS_phat = ARpOLS(inflation,phat_AIC,1, 0.05);
 
 ML_AR1 = ARpML(inflation,1,1, 0.05);
 
-
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bootstrap Confidence Interval for AR(1) %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

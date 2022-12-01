@@ -1,46 +1,64 @@
 %%%% OLS Function %%%%
 
-%%% Inputs %%%
+%%% Input %%%
 % y : [Tx1] data vectors
 % p : [scalar] number of lags
 % const = 1 if constant, or 2 if constant + linear trend
 % alpha : significance of the p-values
 
-function OLS = ARpOLS(Y,p,const, alph)
-len = size(Y,1)-p;
-time_vect = nan(len,1);
-const_vect = zeros(len, 1)+1;
-y = Y(1+p:end, 1);
-for i = 1 : len 
-    time_vect(i,1)=i;
-end
+%%% Output %%%
+% OLS Structure :
+%   - T_eff :       [scalar]        effective sample size used in estimation
+%   - thetathat :   [(const+p)x1]   estimation of coefficients
+%   - siguhat :     [scalar]        estimate of standard deviation of error term
+%   - sd_thetahat : [(const+p)x1]   estimate of standard error of coefficients
+%   - tstats :      [(const+p)x1]   t statistics
+%   - pvalues :     [(const+p)x1]   p values of H_0 : thetahat=0
+%   - theta_ci :    [(const+p)x2]   (1-alph)% confidence intervall for theta given
+%                                   significance level alph
+%   - resid :       [T_effx1]       residuals
 
-if const ==1 
-    y_lagged = [const_vect Y(1:end-p, 1)];
+
+
+function OLS = ARpOLS(y,p,const, alph)
+T=size(y,1);                            % sample size
+T_eff = T-p;                            % effective sample size used in estimation
+time_vect = transpose(1:T);     % time term
+const_vect = ones(T, 1);            % constant term
+Y = lagmatrix(y,1:p);                   % create matrix xith lagged variables
+
+
+if const ==1
+    Y = [const_vect Y];             % constant term
 elseif const == 2
-    y_lagged = [const_vect time_vect Y(1:end-p, 1)];
+    Y= [const_vect time_vect Y];    % constant term + time trend
 end
 
-YtYinv = inv(y_lagged'*y_lagged);
-thetahat = YtYinv*(y_lagged'*y);
+Y=Y((p+1):end,:); % get rid of initial p observations
+y=y((p+1):end,:); % get rid of initial p observations
 
-yhat = sum((Y(1:end-p, 1)*thetahat'), 2);
-uhat =  y-yhat;
-utu = uhat'*uhat;
+YtYinv = inv(Y'*Y);
+thetahat = YtYinv*(Y'*y);   % OLS estimator of coefficients;
 
-var_uhat=utu/(len-p-const);
-siguhat = sqrt(var_uhat);
+yhat = Y*thetahat;          % predicted values
+uhat =  y-yhat;             % residuals
+utu = uhat'*uhat;           
 
-var_thetahat=var_uhat*(diag(YtYinv));
-sd_thetahat = sqrt(var_thetahat);
+var_uhat=utu/(T_eff-p-const);           % variance of error term
+siguhat = sqrt(var_uhat);               % standard deviation of error term
+var_thetahat=var_uhat*(diag(YtYinv));   % variance of coefficients
+sd_thetahat = sqrt(var_thetahat);       % sd of coefficients
 
-t_stats = thetahat./sd_thetahat;
-t_crit = -tinv(alph/2,len-p-const);
-pvalues = tpdf(t_stats,len-p-const);
+t_stats = thetahat./sd_thetahat;        % t-statistics
+t_crit = -tinv(alph/2,T_eff-p-const);     % critical value
+pvalues = tpdf(t_stats,T_eff-p-const);    % p-values
 
+% confidence interval
 theta_ci = [thetahat-t_crit.*sd_thetahat, thetahat+t_crit.*sd_thetahat];
 
-OLS.T_eff = len;
+
+
+OLS.T_eff = T_eff;
 OLS.thetahat = thetahat;
 OLS.siguhat = siguhat;
 OLS.sd_thetahat = sd_thetahat;
