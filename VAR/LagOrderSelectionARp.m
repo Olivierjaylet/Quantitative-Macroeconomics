@@ -63,10 +63,10 @@ nlag = find(INFO_CRIT == min(INFO_CRIT));
 results = results(idx,:);
 
 % Display summary of results
-% fprintf('*************************************************************\n');
-% fprintf('*** OPTIMAL ENDOGENOUS LAGS FROM %s INFORMATION CRITERIA ***\n',crit);
-% fprintf('*************************************************************\n');
-% disp(array2table(results,'VariableNames',{'Lag',crit}))
-% fprintf('  Optimal number of lags (searched up to %d lags):\n',pmax);
-% fprintf('  %s Info Criterion:    %d\n',crit,nlag);
-% fprintf('\n');
+fprintf('*************************************************************\n');
+fprintf('*** OPTIMAL ENDOGENOUS LAGS FROM %s INFORMATION CRITERIA ***\n',crit);
+fprintf('*************************************************************\n');
+disp(array2table(results,'VariableNames',{'Lag',crit}))
+fprintf('  Optimal number of lags (searched up to %d lags):\n',pmax);
+fprintf('  %s Info Criterion:    %d\n',crit,nlag);
+fprintf('\n');

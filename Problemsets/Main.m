@@ -227,8 +227,9 @@ Y_AR1 = func_AR1_2(0.95, 1000, 1, 1);
 %%%%%%% Information Criteria for AR(p) %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% 
 
-AIC= LagOrderSelectionARp(Y_AR4,1,10,"AIC");
+AIC= LagOrderSelectionARp(Y_AR1,1,10,"AIC");
 %%
 SIC = LagOrderSelectionARp(Y_AR4,1,10,"SIC");
 %%
